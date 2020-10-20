@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class WorkerDao {
@@ -36,5 +37,13 @@ public class WorkerDao {
                 }
             }
         }
+    }
+
+    public void insert(String worker) {
+        
+    }
+
+    public List<String> list() {
+        return null;
     }
 }
