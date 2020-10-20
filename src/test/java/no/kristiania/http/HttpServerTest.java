@@ -97,7 +97,7 @@ class HttpServerTest {
     @Test
     void shouldPostNewMember() throws IOException, SQLException {
         HttpServer server = new HttpServer(10008, dataSource);
-        HttpClient client = new HttpClient("localhost", 10008, "/api/projectMembers", "POST", "full_name=Carlo&email_address=haha@gmail.com");
+        HttpClient client = new HttpClient("localhost", 10008, "/api/members", "POST", "full_name=Carlo");
         assertEquals(200, client.getStatusCode());
         assertThat(server.getMembers()).contains("Carlo");
     }
@@ -108,6 +108,6 @@ class HttpServerTest {
         WorkerDao workerDao = new WorkerDao(dataSource);
         workerDao.insert("Chris");
         HttpClient client = new HttpClient("localhost", 10009, "/api/projectMembers");
-        assertEquals("<ul><li>Chris</li></ul>", client.getResponseBody());
+        assertThat(client.getResponseBody()).contains("<li>Chris</li>");
     }
 }
