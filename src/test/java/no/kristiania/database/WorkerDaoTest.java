@@ -1,5 +1,6 @@
 package no.kristiania.database;
 
+import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -12,10 +13,9 @@ class WorkerDaoTest {
     @Test
     void shouldListInsertedWorkers() throws SQLException {
         JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setUrl("jdbc:h2:mem:test");
-        dataSource.getConnection()
-                .prepareStatement("create table workers (worker_name varchar )")
-                .executeUpdate();
+        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+
+        Flyway.configure().dataSource(dataSource).load().migrate();
 
         WorkerDao workerDao = new WorkerDao(dataSource);
         String worker = exampleWorkerName();
