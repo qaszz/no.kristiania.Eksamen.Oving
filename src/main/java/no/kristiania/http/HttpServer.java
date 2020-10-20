@@ -54,7 +54,6 @@ public class HttpServer {
 
 
 
-
         int questionPos = requestTarget.indexOf('?');
 
         String requestPath = questionPos != -1 ? requestTarget.substring(0, questionPos) : requestTarget;
@@ -64,6 +63,7 @@ public class HttpServer {
 
             Worker worker = new Worker();
             worker.setName(requestParameter.getParameter("full_name"));
+            worker.setEmail(requestParameter.getParameter("email_address"));
             workerDao.insert(worker);
             String body = "You have added a new worker!";
             String response = "HTTP/1.1 200 OK\r\n" +
