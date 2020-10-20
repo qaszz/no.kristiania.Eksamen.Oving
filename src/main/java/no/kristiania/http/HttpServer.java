@@ -2,20 +2,20 @@ package no.kristiania.http;
 
 import no.kristiania.database.WorkerDao;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HttpServer {
 
-    private File contentRoot;
+    private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
+
     private final WorkerDao workerDao;
 
     public HttpServer(int port, DataSource dataSource) throws IOException{
@@ -75,39 +75,41 @@ public class HttpServer {
             } else if (requestPath.equals("/api/projectMembers")){
                 handleGetMembers(clientSocket);
             } else {
-                File file = new File(contentRoot, requestPath);
-                if (!file.exists()) {
-                    String body = file + " does not exist";
-                    String response = "HTTP/1.1 404 Not Found\r\n" +
-                            "Content-Length: " + body.length() + "\r\n" +
-
-                            "\r\n" +
-                            body;
-
-                    // Write the response back to the client
-                    clientSocket.getOutputStream().write(response.getBytes());
-                    return;
-                }
-
-                String statusCode = "200";
-                String contentType = "text/plain";
-                if (file.getName().endsWith(".html")){
-                    contentType = "text/html";
-                } else if (file.getName().endsWith(".css")) {
-                    contentType = "text/plain";
-                }
-                String response = "HTTP/1.1 " + statusCode + " OK\r\n" +
-                        "Content-Length: " + file.length() + "\r\n" +
-                        "Connection: close\r\n" +
-                        "Content-Type: " + contentType + "\r\n" +
-                        "\r\n";
-
-                // Write the response back to the client
-                clientSocket.getOutputStream().write(response.getBytes());
-
-                new FileInputStream(file).transferTo(clientSocket.getOutputStream());
-                return;
+                handleFileRequest(clientSocket, requestPath);
             }
+        }
+    }
+
+    private void handleFileRequest(Socket clientSocket, String requestPath) throws IOException {
+        try (InputStream inputStream = getClass().getResourceAsStream(requestPath)) {
+           if (inputStream == null) {
+               String body = requestPath + " does not exist";
+               String response = "HTTP/1.1 404 Not Found\r\n" +
+                       "Content-Length: " + body.length() + "\r\n" +
+
+                       "\r\n" +
+                       body;
+
+               // Write the response back to the client
+               clientSocket.getOutputStream().write(response.getBytes());
+               return;
+           }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            inputStream.transferTo(buffer);
+            String contentType = "text/plain";
+            if (requestPath.endsWith(".html")){
+                contentType = "text/html";
+            } else if (requestPath.endsWith(".css")) {
+                contentType = "text/plain";
+            }
+
+            String response = "HTTP/1.1 200 OK\r\n" +
+                    "Content-Length: " + buffer.toByteArray().length + "\r\n" +
+                    "Connection: close\r\n" +
+                    "Content-Type: " + contentType + "\r\n" +
+                    "\r\n";
+            clientSocket.getOutputStream().write(response.getBytes());
+            clientSocket.getOutputStream().write(buffer.toByteArray());
         }
     }
 
@@ -160,11 +162,8 @@ public class HttpServer {
         dataSource.setPassword("hermosa321");
 
         HttpServer server = new HttpServer(8080, dataSource);
-        server.setContentRoot(new File("src/main/resources"));
-    }
+        logger.info("Started on http://localhost:{}/index.html", 8080);
 
-    public void setContentRoot(File contentRoot) {
-        this.contentRoot = contentRoot;
     }
 
     public List<String> getMembers() throws SQLException {
