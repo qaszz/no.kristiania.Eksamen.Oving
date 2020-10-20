@@ -40,10 +40,10 @@ public class WorkerDao {
                     while (rs.next()) {
                         workers.add(rs.getString("worker_name"));
                     }
+                    return workers;
                 }
             }
         }
-        return this.workers;
     }
 
     public static void main(String[] args) throws SQLException {
