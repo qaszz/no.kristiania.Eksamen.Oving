@@ -3,10 +3,7 @@ package no.kristiania.database;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -22,15 +19,36 @@ public class WorkerDao {
 
     public void insert(Worker worker) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO workers (worker_name) values (?)")) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO workers (worker_name) values (?)",
+                    Statement.RETURN_GENERATED_KEYS
+            )) {
                 statement.setString(1, worker.getName());
                 statement.executeUpdate();
+
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    generatedKeys.next();
+                    worker.setId(generatedKeys.getLong("id"));
+                }
             }
         }
     }
 
     public Worker retrieve(Long id) throws SQLException {
-        return new Worker();
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers")) {
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        Worker worker = new Worker();
+                        worker.setId(rs.getLong("id"));
+                        worker.setName(rs.getString("worker_name"));
+                        return worker;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
     }
 
     public List<String> list() throws SQLException {
