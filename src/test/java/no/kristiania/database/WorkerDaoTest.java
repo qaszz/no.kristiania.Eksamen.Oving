@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WorkerDaoTest {
 
     private WorkerDao workerDao;
+    private final Random random = new Random();
 
     @BeforeEach
     void setUp() {
@@ -47,12 +48,12 @@ class WorkerDaoTest {
     private Worker exampleWorker() {
         Worker worker = new Worker();
         worker.setName(exampleWorkerName());
+        worker.setEmail("username" + random.nextInt(1000) + "@gmail.com");
         return worker;
     }
 
     private String exampleWorkerName() {
         String[] options = { "Ole", "Ali", "Chris", "Bjørn"};
-        Random random = new Random();
         return options[random.nextInt(options.length)];
     }
 }

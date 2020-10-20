@@ -20,10 +20,11 @@ public class WorkerDao {
     public void insert(Worker worker) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO workers (worker_name) values (?)",
+                    "INSERT INTO workers (worker_name, email) values (?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
                 statement.setString(1, worker.getName());
+                statement.setString(2, worker.getEmail());
                 statement.executeUpdate();
 
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -43,6 +44,7 @@ public class WorkerDao {
                         Worker worker = new Worker();
                         worker.setId(rs.getLong("id"));
                         worker.setName(rs.getString("worker_name"));
+                        worker.setEmail(rs.getString("email"));
                         return worker;
                     } else {
                         return null;
