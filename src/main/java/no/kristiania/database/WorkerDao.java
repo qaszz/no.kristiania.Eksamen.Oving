@@ -53,25 +53,13 @@ public class WorkerDao {
         // TODO: database passwords should never be checked in!
         dataSource.setPassword("hermosa321");
 
+        WorkerDao workerDao = new WorkerDao(dataSource);
+
         System.out.println("What's the name of the new worker");
         Scanner scanner = new Scanner(System.in);
         String workerName = scanner.nextLine();
 
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO workers (worker_name) values (?)")) {
-                statement.setString(1, workerName);
-                statement.executeUpdate();
-            }
-        }
-
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers")) {
-                try (ResultSet rs = statement.executeQuery()) {
-                    while (rs.next()) {
-                        System.out.println(rs.getString("worker_name"));
-                    }
-                }
-            }
-        }
+        workerDao.insert(workerName);
+        System.out.println(workerDao.list());
     }
 }
