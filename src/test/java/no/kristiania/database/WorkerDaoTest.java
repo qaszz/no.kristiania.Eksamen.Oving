@@ -33,6 +33,7 @@ class WorkerDaoTest {
     void shouldRetrieveAllWorkerProperties() throws SQLException {
         Worker worker = exampleWorker();
         workerDao.insert(worker);
+        assertThat(worker).hasNoNullFieldsOrProperties();
         assertThat(workerDao.retrieve(worker.getId()))
                 .usingRecursiveComparison()
                 .isEqualTo(worker);
