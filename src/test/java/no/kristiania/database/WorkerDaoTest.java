@@ -34,6 +34,7 @@ class WorkerDaoTest {
         Worker worker = exampleWorker();
         workerDao.insert(worker);
         assertThat(workerDao.retrieve(worker.getId()))
+                .usingRecursiveComparison()
                 .isEqualTo(worker);
     }
 
