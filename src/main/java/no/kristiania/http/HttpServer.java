@@ -17,6 +17,7 @@ import java.util.Properties;
 public class HttpServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
+    public static final String connection = "Connection: close";
 
     private final WorkerDao workerDao;
 
@@ -28,8 +29,8 @@ public class HttpServer {
         // new Thread executes the code in a separate "thread", that is: In parallel
         new Thread(() ->{ // anonymous function with code that will be executed in parallel
             while (true) {
-                try { //accept waits for a client to try to connect - blocks
-                    handleRequest(serverSocket.accept());
+                try (Socket clientSocket = serverSocket.accept()) { //accept waits for a client to try to connect - blocks
+                    handleRequest(clientSocket);
                 } catch (IOException | SQLException e) {
                     // If something went wrong - print out exception and try again
                     e.printStackTrace();
@@ -63,6 +64,7 @@ public class HttpServer {
             workerDao.insert(requestParameter.getParameter("full_name"));
             String body = "You have added a new worker!";
             String response = "HTTP/1.1 200 OK\r\n" +
+                    connection + "\r\n" +
                     "Content-Length: " + body.length() + "\r\n" +
                     "\r\n" +
                     body;
@@ -88,7 +90,7 @@ public class HttpServer {
                String body = requestPath + " does not exist";
                String response = "HTTP/1.1 404 Not Found\r\n" +
                        "Content-Length: " + body.length() + "\r\n" +
-
+                       connection + "\r\n" +
                        "\r\n" +
                        body;
 
@@ -107,7 +109,7 @@ public class HttpServer {
 
             String response = "HTTP/1.1 200 OK\r\n" +
                     "Content-Length: " + buffer.toByteArray().length + "\r\n" +
-                    "Connection: close\r\n" +
+                    connection + "\r\n" +
                     "Content-Type: " + contentType + "\r\n" +
                     "\r\n";
             clientSocket.getOutputStream().write(response.getBytes());
@@ -125,7 +127,7 @@ public class HttpServer {
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Content-Length: " + body.length() + "\r\n" +
                 "Content-Type: text/html\r\n"+
-                "Connection: close\r\n"  +
+                connection + "\r\n" +
                 "\r\n" +
                 body;
 
@@ -149,6 +151,7 @@ public class HttpServer {
         String response = "HTTP/1.1 " + statusCode + " OK\r\n" +
                 "Content-Length: " + body.length() + "\r\n" +
                 "Content-Type: text/plain\r\n" +
+                connection + "\r\n" +
                 "\r\n" +
                 body;
 
