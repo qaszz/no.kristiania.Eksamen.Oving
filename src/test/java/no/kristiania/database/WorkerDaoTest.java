@@ -31,6 +31,8 @@ class WorkerDaoTest {
 
     @Test
     void shouldRetrieveAllWorkerProperties() throws SQLException {
+        workerDao.insert(exampleWorker());
+        workerDao.insert(exampleWorker());
         Worker worker = exampleWorker();
         workerDao.insert(worker);
         assertThat(worker).hasNoNullFieldsOrProperties();
