@@ -32,8 +32,18 @@ public class WorkerDao {
         workers.add(worker);
     }
 
-    public List<String> list() {
-        return workers;
+    public List<String> list() throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers")) {
+                try (ResultSet rs = statement.executeQuery()) {
+                    List<String> workers = new ArrayList<>();
+                    while (rs.next()) {
+                        workers.add(rs.getString("worker_name"));
+                    }
+                }
+            }
+        }
+        return this.workers;
     }
 
     public static void main(String[] args) throws SQLException {
