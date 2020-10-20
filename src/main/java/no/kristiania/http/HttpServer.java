@@ -171,7 +171,6 @@ public class HttpServer {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         dataSource.setUrl(properties.getProperty("dataSource.url"));
         dataSource.setUser(properties.getProperty("dataSource.username"));
-        // TODO: database passwords should never be checked in!
         dataSource.setPassword(properties.getProperty("dataSource.password"));
         logger.info("Using database {}", dataSource.getUrl());
         Flyway.configure().dataSource(dataSource).load().migrate();
