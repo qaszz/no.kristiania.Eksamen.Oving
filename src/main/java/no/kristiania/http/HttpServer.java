@@ -1,6 +1,7 @@
 package no.kristiania.http;
 
 import no.kristiania.database.WorkerDao;
+import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 public class HttpServer {
 
@@ -155,11 +157,18 @@ public class HttpServer {
     }
 
     public static void main(String[] args) throws IOException {
+        Properties properties = new Properties();
+        try (FileReader fileReader = new FileReader("pgr203.properties")) {
+            properties.load(fileReader);
+        }
+
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/kristianiacompany");
-        dataSource.setUser("kristianiaboss");
+        dataSource.setUrl(properties.getProperty("dataSource.url"));
+        dataSource.setUser(properties.getProperty("dataSource.username"));
         // TODO: database passwords should never be checked in!
-        dataSource.setPassword("hermosa321");
+        dataSource.setPassword(properties.getProperty("dataSource.password"));
+        logger.info("Using database {}", dataSource.getUrl());
+        Flyway.configure().dataSource(dataSource).load().migrate();
 
         HttpServer server = new HttpServer(8080, dataSource);
         logger.info("Started on http://localhost:{}/index.html", 8080);
