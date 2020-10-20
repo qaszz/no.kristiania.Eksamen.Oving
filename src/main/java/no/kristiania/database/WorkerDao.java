@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 public class WorkerDao {
 
-    private final ArrayList<String> workers = new ArrayList<>();
     private DataSource dataSource;
 
     public WorkerDao(DataSource dataSource) {
@@ -28,8 +27,6 @@ public class WorkerDao {
                 statement.executeUpdate();
             }
         }
-
-        workers.add(worker);
     }
 
     public List<String> list() throws SQLException {
