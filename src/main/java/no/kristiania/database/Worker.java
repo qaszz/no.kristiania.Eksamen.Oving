@@ -2,6 +2,7 @@ package no.kristiania.database;
 
 public class Worker {
     private String name;
+    private String email;
     private Long id;
 
     public String getName() {
@@ -18,5 +19,13 @@ public class Worker {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
