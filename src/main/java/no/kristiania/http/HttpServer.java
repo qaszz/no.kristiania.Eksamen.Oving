@@ -62,7 +62,7 @@ public class HttpServer {
             QueryString requestParameter = new QueryString(request.getBody());
 
             Worker worker = new Worker();
-            worker.setName(requestParameter.getParameter("full_name"));
+            worker.setName(requestParameter.getParameter("worker_name"));
             worker.setEmail(requestParameter.getParameter("email_address"));
             workerDao.insert(worker);
             String body = "You have added a new worker!";
@@ -123,7 +123,7 @@ public class HttpServer {
     private void handleGetMembers(Socket clientSocket) throws IOException, SQLException {
         String body = "<ul>";
         for (Worker member : workerDao.list()) {
-            body += "<li>" + member.getName() + " (email: " + member.getEmail() + ")</li>";
+            body += "<li>Name: " + member.getName() + "<br> Email Address: " + member.getEmail() + "</li>";
         }
 
         body+= "</ul>";

@@ -1,5 +1,7 @@
 package no.kristiania.database;
 
+import java.net.URLDecoder;
+
 public class Worker {
     private String name;
     private String email;
@@ -22,7 +24,7 @@ public class Worker {
     }
 
     public String getEmail() {
-        return email;
+        return URLDecoder.decode(email);
     }
 
     public void setEmail(String email) {
