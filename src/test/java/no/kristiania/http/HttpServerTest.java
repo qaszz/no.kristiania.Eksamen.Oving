@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,7 +94,7 @@ class HttpServerTest {
     @Test
     void shouldPostNewMember() throws IOException, SQLException {
         HttpServer server = new HttpServer(10008, dataSource);
-        HttpClient client = new HttpClient("localhost", 10008, "/api/members", "POST", "full_name=Carlo");
+        HttpClient client = new HttpClient("localhost", 10008, "/api/members", "POST", "worker_name=Carlo&email_address=carlo@gmail.com");
         assertEquals(200, client.getStatusCode());
         assertThat(server.getMembers())
                 .extracting(Worker::getName)
@@ -111,6 +110,6 @@ class HttpServerTest {
         worker.setEmail("haha@gmail.com");
         workerDao.insert(worker);
         HttpClient client = new HttpClient("localhost", 10009, "/api/projectMembers");
-        assertThat(client.getResponseBody()).contains("<li>Chris (email: haha@gmail.com)</li>");
+        assertThat(client.getResponseBody()).contains("<li>Name: Chris<br> Email Address: haha@gmail.com</li>");
     }
 }

@@ -54,7 +54,6 @@ public class HttpServer {
 
 
 
-
         int questionPos = requestTarget.indexOf('?');
 
         String requestPath = questionPos != -1 ? requestTarget.substring(0, questionPos) : requestTarget;
@@ -63,7 +62,8 @@ public class HttpServer {
             QueryString requestParameter = new QueryString(request.getBody());
 
             Worker worker = new Worker();
-            worker.setName(requestParameter.getParameter("full_name"));
+            worker.setName(requestParameter.getParameter("worker_name"));
+            worker.setEmail(requestParameter.getParameter("email_address"));
             workerDao.insert(worker);
             String body = "You have added a new worker!";
             String response = "HTTP/1.1 200 OK\r\n" +
@@ -123,7 +123,7 @@ public class HttpServer {
     private void handleGetMembers(Socket clientSocket) throws IOException, SQLException {
         String body = "<ul>";
         for (Worker member : workerDao.list()) {
-            body += "<li>" + member.getName() + " (email: " + member.getEmail() + ")</li>";
+            body += "<li>Name: " + member.getName() + "<br> Email Address: " + member.getEmail() + "</li>";
         }
 
         body+= "</ul>";
@@ -171,7 +171,6 @@ public class HttpServer {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         dataSource.setUrl(properties.getProperty("dataSource.url"));
         dataSource.setUser(properties.getProperty("dataSource.username"));
-        // TODO: database passwords should never be checked in!
         dataSource.setPassword(properties.getProperty("dataSource.password"));
         logger.info("Using database {}", dataSource.getUrl());
         Flyway.configure().dataSource(dataSource).load().migrate();
