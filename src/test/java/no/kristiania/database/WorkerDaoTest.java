@@ -30,6 +30,7 @@ class WorkerDaoTest {
         workerDao.insert(worker1);
         workerDao.insert(worker2);
         assertThat(workerDao.list())
+                .extracting(Worker::getName)
                 .contains(worker1.getName(), worker2.getName());
     }
 

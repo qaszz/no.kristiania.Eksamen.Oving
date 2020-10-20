@@ -80,7 +80,7 @@ class HttpServerTest {
         Files.writeString(new File(contentRoot,"index.html").toPath(), "<h2>Hello World</h2>");
 
         HttpClient client = new HttpClient("localhost", 10006, "/index.html");
-        assertEquals("text/html", client.getResponseHeader("Content-Type"));;
+        assertEquals("text/html", client.getResponseHeader("Content-Type"));
     }
 
     @Test
@@ -97,7 +97,9 @@ class HttpServerTest {
         HttpServer server = new HttpServer(10008, dataSource);
         HttpClient client = new HttpClient("localhost", 10008, "/api/members", "POST", "full_name=Carlo");
         assertEquals(200, client.getStatusCode());
-        assertThat(server.getMembers()).contains("Carlo");
+        assertThat(server.getMembers())
+                .extracting(Worker::getName)
+                .contains("Carlo");
     }
 
     @Test
@@ -106,8 +108,9 @@ class HttpServerTest {
         WorkerDao workerDao = new WorkerDao(dataSource);
         Worker worker = new Worker();
         worker.setName("Chris");
+        worker.setEmail("haha@gmail.com");
         workerDao.insert(worker);
         HttpClient client = new HttpClient("localhost", 10009, "/api/projectMembers");
-        assertThat(client.getResponseBody()).contains("<li>Chris</li>");
+        assertThat(client.getResponseBody()).contains("<li>Chris (email: haha@gmail.com)</li>");
     }
 }

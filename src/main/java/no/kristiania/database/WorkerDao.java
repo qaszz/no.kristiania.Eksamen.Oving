@@ -41,11 +41,7 @@ public class WorkerDao {
                 statement.setLong(1,id);
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
-                        Worker worker = new Worker();
-                        worker.setId(rs.getLong("id"));
-                        worker.setName(rs.getString("worker_name"));
-                        worker.setEmail(rs.getString("email"));
-                        return worker;
+                        return mapRowToProduct(rs);
                     } else {
                         return null;
                     }
@@ -54,13 +50,21 @@ public class WorkerDao {
         }
     }
 
-    public List<String> list() throws SQLException {
+    private Worker mapRowToProduct(ResultSet rs) throws SQLException {
+        Worker worker = new Worker();
+        worker.setId(rs.getLong("id"));
+        worker.setName(rs.getString("worker_name"));
+        worker.setEmail(rs.getString("email"));
+        return worker;
+    }
+
+    public List<Worker> list() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers")) {
                 try (ResultSet rs = statement.executeQuery()) {
-                    List<String> workers = new ArrayList<>();
+                    List<Worker> workers = new ArrayList<>();
                     while (rs.next()) {
-                        workers.add(rs.getString("worker_name"));
+                        workers.add(mapRowToProduct(rs));
                     }
                     return workers;
                 }
