@@ -24,9 +24,12 @@ class WorkerDaoTest {
 
     @Test
     void shouldListInsertedWorkers() throws SQLException {
-        Worker worker = exampleWorker();
-        workerDao.insert(worker);
-        assertThat(workerDao.list()).contains(worker.getName());
+        Worker worker1 = exampleWorker();
+        Worker worker2 = exampleWorker();
+        workerDao.insert(worker1);
+        workerDao.insert(worker2);
+        assertThat(workerDao.list())
+                .contains(worker1.getName(), worker2.getName());
     }
 
     @Test

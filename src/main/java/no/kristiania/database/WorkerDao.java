@@ -36,7 +36,8 @@ public class WorkerDao {
 
     public Worker retrieve(Long id) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers")) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers WHERE id = ?")) {
+                statement.setLong(1,id);
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
                         Worker worker = new Worker();
