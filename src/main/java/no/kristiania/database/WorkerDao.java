@@ -20,13 +20,17 @@ public class WorkerDao {
         this.dataSource = dataSource;
     }
 
-    public void insert(String worker) throws SQLException {
+    public void insert(Worker worker) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("INSERT INTO workers (worker_name) values (?)")) {
-                statement.setString(1, worker);
+                statement.setString(1, worker.getName());
                 statement.executeUpdate();
             }
         }
+    }
+
+    public Worker retrieve(Long id) {
+        return null;
     }
 
     public List<String> list() throws SQLException {
@@ -54,9 +58,11 @@ public class WorkerDao {
 
         System.out.println("What's the name of the new worker");
         Scanner scanner = new Scanner(System.in);
-        String workerName = scanner.nextLine();
 
-        workerDao.insert(workerName);
+        Worker worker = new Worker();
+        worker.setName(scanner.nextLine());
+
+        workerDao.insert(worker);
         System.out.println(workerDao.list());
     }
 }

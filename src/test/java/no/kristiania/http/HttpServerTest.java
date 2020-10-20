@@ -1,5 +1,6 @@
 package no.kristiania.http;
 
+import no.kristiania.database.Worker;
 import no.kristiania.database.WorkerDao;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
@@ -103,7 +104,9 @@ class HttpServerTest {
     void shouldReturnExistingMember() throws IOException, SQLException {
         HttpServer server = new HttpServer(10009, dataSource);
         WorkerDao workerDao = new WorkerDao(dataSource);
-        workerDao.insert("Chris");
+        Worker worker = new Worker();
+        worker.setName("Chris");
+        workerDao.insert(worker);
         HttpClient client = new HttpClient("localhost", 10009, "/api/projectMembers");
         assertThat(client.getResponseBody()).contains("<li>Chris</li>");
     }
