@@ -33,8 +33,15 @@ public class ProjectDaoTest {
     }
 
     @Test
-    void shouldRetrieveAllProjectProperties(){
+    void shouldRetrieveAllProjectProperties() throws SQLException {
+        Project project1 = exampleProject();
+        Project project2 = exampleProject();
+        Project project = exampleProject();
+        projectDao.insert(project);
 
+        assertThat(projectDao.retrieve(project.getId()))
+                .usingRecursiveComparison()
+                .isEqualTo(project);
     }
 
     private Project exampleProject() {
