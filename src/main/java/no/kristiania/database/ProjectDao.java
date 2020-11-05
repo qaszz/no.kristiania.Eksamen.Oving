@@ -28,6 +28,7 @@ public class ProjectDao {
 
     private Project mapRowToProject(ResultSet rs) throws SQLException {
         Project project = new Project();
+        project.setId(rs.getLong("id"));
         project.setName(rs.getString("name"));
         return project;
     }
@@ -49,7 +50,18 @@ public class ProjectDao {
         }
     }
 
-    public Project retrieve(long id) {
-        return null;
+    public Project retrieve(long id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM projects WHERE id = ?")) {
+                statement.setLong(1, id);
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        return mapRowToProject(rs);
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
     }
 }
