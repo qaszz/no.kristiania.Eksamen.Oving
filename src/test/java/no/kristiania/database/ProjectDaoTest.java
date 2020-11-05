@@ -38,7 +38,7 @@ public class ProjectDaoTest {
     }
 
     private Project exampleProject() {
-        return null;
+        return new Project();
     }
 
 }

@@ -8,13 +8,12 @@ entity Workers {
     project_id
 }
 
-entity WorkerProject {
+entity Projects {
     id
     --
     project_name
-    project_status
 }
 
-WorkerProject ||--o{ Workers
+Projects ||--o{ Workers
 
 @enduml
