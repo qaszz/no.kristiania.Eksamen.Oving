@@ -1,12 +1,9 @@
 package no.kristiania.database;
 
-import org.postgresql.ds.PGSimpleDataSource;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class WorkerDao {
 
@@ -70,24 +67,5 @@ public class WorkerDao {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) throws SQLException {
-        PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/kristianiacompany");
-        dataSource.setUser("kristianiaboss");
-        // TODO: database passwords should never be checked in!
-        dataSource.setPassword("hermosa321");
-
-        WorkerDao workerDao = new WorkerDao(dataSource);
-
-        System.out.println("What's the name of the new worker");
-        Scanner scanner = new Scanner(System.in);
-
-        Worker worker = new Worker();
-        worker.setName(scanner.nextLine());
-
-        workerDao.insert(worker);
-        System.out.println(workerDao.list());
     }
 }
