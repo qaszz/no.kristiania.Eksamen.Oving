@@ -26,9 +26,11 @@ public class HttpServer {
     public static final String connection = "Connection: close";
     private Map<String, HttpController> controllers;
 
+    private int port;
     private final WorkerDao workerDao;
 
     public HttpServer(int port, DataSource dataSource) throws IOException{
+        this.port = port;
         workerDao = new WorkerDao(dataSource);
         ProjectDao projectDao = new ProjectDao(dataSource);
         controllers = Map.of(
@@ -101,6 +103,9 @@ public class HttpServer {
                 body;
 
         clientSocket.getOutputStream().write(response.getBytes());
+    }
+    public int getPort(){
+        return port;
     }
 
     private void handleFileRequest(Socket clientSocket, String requestPath) throws IOException {
