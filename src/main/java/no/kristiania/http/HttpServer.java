@@ -1,5 +1,6 @@
 package no.kristiania.http;
 
+import no.kristiania.database.ProjectDao;
 import no.kristiania.database.Worker;
 import no.kristiania.database.WorkerDao;
 import org.flywaydb.core.Flyway;
@@ -23,18 +24,19 @@ public class HttpServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
     public static final String connection = "Connection: close";
-    private Map<String, HttpController> controllers = Map.of(
-            "/api/newProject", new ProjectPostController(),
-            "/api/projects", new ProjectGetController()
-    );
+    private Map<String, HttpController> controllers;
 
     private final WorkerDao workerDao;
 
     public HttpServer(int port, DataSource dataSource) throws IOException{
         workerDao = new WorkerDao(dataSource);
+        ProjectDao projectDao = new ProjectDao(dataSource);
+        controllers = Map.of(
+                "/api/newProject", new ProjectPostController(projectDao),
+                "/api/projects", new ProjectGetController(projectDao)
+        );
         // Opens an entry point to our program for network clients
         ServerSocket serverSocket = new ServerSocket(port);
-
         // new Thread executes the code in a separate "thread", that is: In parallel
         new Thread(() ->{ // anonymous function with code that will be executed in parallel
             while (true) {
@@ -46,7 +48,6 @@ public class HttpServer {
                 }
             }
         }).start(); // Start the threads, so the code inside executes without blocking the current thread
-
     }
 
     // This code will be executed for each client
