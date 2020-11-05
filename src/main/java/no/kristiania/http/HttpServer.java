@@ -8,17 +8,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class HttpServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
     public static final String connection = "Connection: close";
+    private Map<String, HttpController> controllers = Map.of(
+            "/api/newProject", new ProjectPostController(),
+            "/api/projects", new ProjectGetController()
+    );
 
     private final WorkerDao workerDao;
 
@@ -59,32 +67,47 @@ public class HttpServer {
         String requestPath = questionPos != -1 ? requestTarget.substring(0, questionPos) : requestTarget;
 
         if (requestMethod.equals("POST")){
-            QueryString requestParameter = new QueryString(request.getBody());
-
-            Worker worker = new Worker();
-            worker.setName(requestParameter.getParameter("worker_name"));
-            worker.setEmail(requestParameter.getParameter("email_address"));
-            workerDao.insert(worker);
-            String body = "You have added a new worker!";
-            String response = "HTTP/1.1 200 OK\r\n" +
-                    connection + "\r\n" +
-                    "Content-Length: " + body.length() + "\r\n" +
-                    "\r\n" +
-                    body;
-
-            // Write the response back to the client
-            clientSocket.getOutputStream().write(response.getBytes());
-
+            if (requestPath.equals("/api/members")){
+                handlePostProject(clientSocket, request);
+            } else {
+                getController(requestPath).handle(request, clientSocket);
+            }
         } else {
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
-
             } else if (requestPath.equals("/api/projectMembers")){
                 handleGetMembers(clientSocket);
             } else {
-                handleFileRequest(clientSocket, requestPath);
+                HttpController controller = controllers.get(requestPath);
+                if (controller != null) {
+                    controller.handle(request, clientSocket);
+                } else {
+                    handleFileRequest(clientSocket, requestPath);
+                }
             }
         }
+    }
+
+    private HttpController getController(String requestPath) {
+        return controllers.get(requestPath);
+    }
+
+    private void handlePostProject(Socket clientSocket, HttpMessage request) throws SQLException, IOException {
+        QueryString requestParameter = new QueryString(request.getBody());
+
+        Worker worker = new Worker();
+        worker.setName(requestParameter.getParameter("worker_name"));
+        worker.setEmail(requestParameter.getParameter("email_address"));
+        workerDao.insert(worker);
+        String body = "You have added a new worker!";
+        String response = "HTTP/1.1 200 OK\r\n" +
+                connection + "\r\n" +
+                "Content-Length: " + body.length() + "\r\n" +
+                "\r\n" +
+                body;
+
+        // Write the response back to the client
+        clientSocket.getOutputStream().write(response.getBytes());
     }
 
     private void handleFileRequest(Socket clientSocket, String requestPath) throws IOException {
