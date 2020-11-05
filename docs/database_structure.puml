@@ -1,0 +1,20 @@
+@startuml
+
+entity Workers {
+    id
+    --
+    * worker_name
+    * email
+    project_id
+}
+
+entity WorkerProject {
+    id
+    --
+    project_name
+    project_status
+}
+
+WorkerProject ||--o{ Workers
+
+@enduml
