@@ -26,18 +26,19 @@ public class HttpServer {
     public static final String connection = "Connection: close";
     private Map<String, HttpController> controllers;
 
-    private int port;
     private final WorkerDao workerDao;
+    private final ServerSocket serverSocket;
 
     public HttpServer(int port, DataSource dataSource) throws IOException{
-        this.port = port;
         workerDao = new WorkerDao(dataSource);
         ProjectDao projectDao = new ProjectDao(dataSource);
         controllers = Map.of(
                 "/api/newProject", new ProjectPostController(projectDao),
                 "/api/projects", new ProjectGetController(projectDao)
         );
-        ServerSocket serverSocket = new ServerSocket(port);
+        serverSocket = new ServerSocket(port);
+        logger.warn("Server started on port {}", serverSocket.getLocalPort());
+
         new Thread(() ->{
             while (true) {
                 try (Socket clientSocket = serverSocket.accept()) {
@@ -105,7 +106,7 @@ public class HttpServer {
         clientSocket.getOutputStream().write(response.getBytes());
     }
     public int getPort(){
-        return port;
+        return serverSocket.getLocalPort();
     }
 
     private void handleFileRequest(Socket clientSocket, String requestPath) throws IOException {
