@@ -29,7 +29,6 @@ public class ProjectGetController implements HttpController{
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
 
     }

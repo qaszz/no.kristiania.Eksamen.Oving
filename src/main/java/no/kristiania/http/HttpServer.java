@@ -35,31 +35,24 @@ public class HttpServer {
                 "/api/newProject", new ProjectPostController(projectDao),
                 "/api/projects", new ProjectGetController(projectDao)
         );
-        // Opens an entry point to our program for network clients
         ServerSocket serverSocket = new ServerSocket(port);
-        // new Thread executes the code in a separate "thread", that is: In parallel
-        new Thread(() ->{ // anonymous function with code that will be executed in parallel
+        new Thread(() ->{
             while (true) {
-                try (Socket clientSocket = serverSocket.accept()) { //accept waits for a client to try to connect - blocks
+                try (Socket clientSocket = serverSocket.accept()) {
                     handleRequest(clientSocket);
                 } catch (IOException | SQLException e) {
-                    // If something went wrong - print out exception and try again
                     e.printStackTrace();
                 }
             }
-        }).start(); // Start the threads, so the code inside executes without blocking the current thread
+        }).start();
     }
 
-    // This code will be executed for each client
     private void handleRequest(Socket clientSocket) throws IOException, SQLException {
         HttpMessage request = new HttpMessage(clientSocket);
         String requestLine = request.getStartLine();
         System.out.println("REQUEST " + requestLine);
-        // Example GET /index.html HTTP/1.1
         String requestMethod = requestLine.split(" ")[0];
-
         String requestTarget = requestLine.split(" ")[1];
-        // Example GET /echo?body=hello HTTP/1.1
 
 
 
@@ -107,7 +100,6 @@ public class HttpServer {
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
     }
 
@@ -121,7 +113,6 @@ public class HttpServer {
                        "\r\n" +
                        body;
 
-               // Write the response back to the client
                clientSocket.getOutputStream().write(response.getBytes());
                return;
            }
@@ -158,7 +149,6 @@ public class HttpServer {
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
     }
 
@@ -166,7 +156,6 @@ public class HttpServer {
         String statusCode = "200";
         String body = "Hello <strong>World</strong>!";
         if (questionPos != -1) {
-            // body = helloo
             QueryString queryString = new QueryString(requestTarget.substring(questionPos + 1));
             if (queryString.getParameter("status") != null) {
                 statusCode = queryString.getParameter("status");
@@ -182,7 +171,6 @@ public class HttpServer {
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
     }
 

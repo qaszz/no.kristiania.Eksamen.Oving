@@ -22,14 +22,13 @@ public class ProjectPostController implements HttpController{
         project.setName(requestParameter.getParameter("name"));
         projectDao.insert(project);
 
-        String body = "You have added a new worker!";
+        String body = "You have added a new project!";
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Connection: close\r\n" +
                 "Content-Length: " + body.length() + "\r\n" +
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
 
     }
