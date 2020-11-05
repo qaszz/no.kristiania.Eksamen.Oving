@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projects | KristianiaProject</title>
+</head>
+<body>
+<h1> List of projects</h1>
+<div id="project"></div>
+</body>
+<script>
+    fetch("/api/projects")
+        .then(function(response) {
+            return response.text();
+        }).then(function(html) {
+        document.getElementById("project").innerHTML = html;
+    });
+</script>
+</html>

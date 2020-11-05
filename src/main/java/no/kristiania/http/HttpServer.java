@@ -1,5 +1,6 @@
 package no.kristiania.http;
 
+import no.kristiania.database.ProjectDao;
 import no.kristiania.database.Worker;
 import no.kristiania.database.WorkerDao;
 import org.flywaydb.core.Flyway;
@@ -8,49 +9,50 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class HttpServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
     public static final String connection = "Connection: close";
+    private Map<String, HttpController> controllers;
 
     private final WorkerDao workerDao;
 
     public HttpServer(int port, DataSource dataSource) throws IOException{
         workerDao = new WorkerDao(dataSource);
-        // Opens an entry point to our program for network clients
+        ProjectDao projectDao = new ProjectDao(dataSource);
+        controllers = Map.of(
+                "/api/newProject", new ProjectPostController(projectDao),
+                "/api/projects", new ProjectGetController(projectDao)
+        );
         ServerSocket serverSocket = new ServerSocket(port);
-
-        // new Thread executes the code in a separate "thread", that is: In parallel
-        new Thread(() ->{ // anonymous function with code that will be executed in parallel
+        new Thread(() ->{
             while (true) {
-                try (Socket clientSocket = serverSocket.accept()) { //accept waits for a client to try to connect - blocks
+                try (Socket clientSocket = serverSocket.accept()) {
                     handleRequest(clientSocket);
                 } catch (IOException | SQLException e) {
-                    // If something went wrong - print out exception and try again
                     e.printStackTrace();
                 }
             }
-        }).start(); // Start the threads, so the code inside executes without blocking the current thread
-
+        }).start();
     }
 
-    // This code will be executed for each client
     private void handleRequest(Socket clientSocket) throws IOException, SQLException {
         HttpMessage request = new HttpMessage(clientSocket);
         String requestLine = request.getStartLine();
         System.out.println("REQUEST " + requestLine);
-        // Example GET /index.html HTTP/1.1
         String requestMethod = requestLine.split(" ")[0];
-
         String requestTarget = requestLine.split(" ")[1];
-        // Example GET /echo?body=hello HTTP/1.1
 
 
 
@@ -59,32 +61,46 @@ public class HttpServer {
         String requestPath = questionPos != -1 ? requestTarget.substring(0, questionPos) : requestTarget;
 
         if (requestMethod.equals("POST")){
-            QueryString requestParameter = new QueryString(request.getBody());
-
-            Worker worker = new Worker();
-            worker.setName(requestParameter.getParameter("worker_name"));
-            worker.setEmail(requestParameter.getParameter("email_address"));
-            workerDao.insert(worker);
-            String body = "You have added a new worker!";
-            String response = "HTTP/1.1 200 OK\r\n" +
-                    connection + "\r\n" +
-                    "Content-Length: " + body.length() + "\r\n" +
-                    "\r\n" +
-                    body;
-
-            // Write the response back to the client
-            clientSocket.getOutputStream().write(response.getBytes());
-
+            if (requestPath.equals("/api/members")){
+                handlePostProject(clientSocket, request);
+            } else {
+                getController(requestPath).handle(request, clientSocket);
+            }
         } else {
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
-
             } else if (requestPath.equals("/api/projectMembers")){
                 handleGetMembers(clientSocket);
             } else {
-                handleFileRequest(clientSocket, requestPath);
+                HttpController controller = controllers.get(requestPath);
+                if (controller != null) {
+                    controller.handle(request, clientSocket);
+                } else {
+                    handleFileRequest(clientSocket, requestPath);
+                }
             }
         }
+    }
+
+    private HttpController getController(String requestPath) {
+        return controllers.get(requestPath);
+    }
+
+    private void handlePostProject(Socket clientSocket, HttpMessage request) throws SQLException, IOException {
+        QueryString requestParameter = new QueryString(request.getBody());
+
+        Worker worker = new Worker();
+        worker.setName(requestParameter.getParameter("worker_name"));
+        worker.setEmail(requestParameter.getParameter("email_address"));
+        workerDao.insert(worker);
+        String body = "You have added a new worker!";
+        String response = "HTTP/1.1 200 OK\r\n" +
+                connection + "\r\n" +
+                "Content-Length: " + body.length() + "\r\n" +
+                "\r\n" +
+                body;
+
+        clientSocket.getOutputStream().write(response.getBytes());
     }
 
     private void handleFileRequest(Socket clientSocket, String requestPath) throws IOException {
@@ -97,7 +113,6 @@ public class HttpServer {
                        "\r\n" +
                        body;
 
-               // Write the response back to the client
                clientSocket.getOutputStream().write(response.getBytes());
                return;
            }
@@ -134,7 +149,6 @@ public class HttpServer {
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
     }
 
@@ -142,7 +156,6 @@ public class HttpServer {
         String statusCode = "200";
         String body = "Hello <strong>World</strong>!";
         if (questionPos != -1) {
-            // body = helloo
             QueryString queryString = new QueryString(requestTarget.substring(questionPos + 1));
             if (queryString.getParameter("status") != null) {
                 statusCode = queryString.getParameter("status");
@@ -158,7 +171,6 @@ public class HttpServer {
                 "\r\n" +
                 body;
 
-        // Write the response back to the client
         clientSocket.getOutputStream().write(response.getBytes());
     }
 

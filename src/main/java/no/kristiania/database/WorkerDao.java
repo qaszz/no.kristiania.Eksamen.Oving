@@ -41,7 +41,7 @@ public class WorkerDao {
                 statement.setLong(1,id);
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
-                        return mapRowToProduct(rs);
+                        return mapRowToWorker(rs);
                     } else {
                         return null;
                     }
@@ -50,7 +50,7 @@ public class WorkerDao {
         }
     }
 
-    private Worker mapRowToProduct(ResultSet rs) throws SQLException {
+    private Worker mapRowToWorker(ResultSet rs) throws SQLException {
         Worker worker = new Worker();
         worker.setId(rs.getLong("id"));
         worker.setName(rs.getString("worker_name"));
@@ -64,7 +64,7 @@ public class WorkerDao {
                 try (ResultSet rs = statement.executeQuery()) {
                     List<Worker> workers = new ArrayList<>();
                     while (rs.next()) {
-                        workers.add(mapRowToProduct(rs));
+                        workers.add(mapRowToWorker(rs));
                     }
                     return workers;
                 }

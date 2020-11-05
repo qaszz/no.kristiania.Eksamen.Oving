@@ -1,0 +1,29 @@
+@startuml
+
+actor user
+participant WebBrowser
+
+box Java Server
+    participant HttpServer
+    participant WorkerListController
+    participant WorkerDao
+end box
+
+database PostgreSQL
+
+User -> WebBrowser: List workers
+WebBrowser -> HttpServer: /index.html
+WebBrowser <- HttpServer: <html>....<script>fetch()</html
+WebBrowser -> HttpServer: /api/workers
+HttpServer -> HttpServer: controllers.get("/api/workers")
+note left of HttpServer: this is called routing
+HttpServer -> WorkerListController: handle(HttpMessage request)
+WorkerListController -> WorkerDao: list()
+WorkerDao -> PostgreSQL: SELECT * FROM WORKERS
+WorkerDao <- PostgreSQL: ResultSet
+WorkerListController <- WorkerDao: List<Worker>
+HttpServer <- WorkerListController: [HttpMessage response]
+WebBrowser <- HttpServer: <li>Name: Per, Email Address: Per@gmail.com</li><li>...</li>
+User <- WebBrowser: List of workers
+
+@enduml
