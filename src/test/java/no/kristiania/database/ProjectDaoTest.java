@@ -1,5 +1,6 @@
 package no.kristiania.database;
 
+import no.kristiania.http.ProjectOptionsController;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,16 @@ public class ProjectDaoTest {
         assertThat(projectDao.retrieve(project.getId()))
                 .usingRecursiveComparison()
                 .isEqualTo(project);
+    }
+
+    @Test
+    void shouldReturnProjectAsOptions() throws SQLException {
+        ProjectOptionsController controller = new ProjectOptionsController(projectDao);
+        Project project = ProjectDaoTest.exampleProject();
+        projectDao.insert(project);
+
+        assertThat(controller.getBody())
+                .contains("<option value=" + project.getId() + ">" + project.getName() + "</option>");
     }
 
     public static Project exampleProject() {
