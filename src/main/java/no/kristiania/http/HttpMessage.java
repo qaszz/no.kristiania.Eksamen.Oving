@@ -24,6 +24,14 @@ public class HttpMessage {
         }
     }
 
+    public HttpMessage(String body) {
+        startLine = "HTTP/1.1 200 OK\r\n";
+        headers = new HashMap<>();
+        headers.put("Content-Length", String.valueOf(body.length()));
+        headers.put("Connection", "close");
+        this.body = body;
+    }
+
     public static String readLine(Socket socket) throws IOException {
         StringBuilder line = new StringBuilder();
         int c;
@@ -68,5 +76,14 @@ public class HttpMessage {
 
     public String getBody() {
         return body;
+    }
+
+    public void write(Socket clientSocket) throws IOException {
+        clientSocket.getOutputStream().write((startLine + "\r\n").getBytes());
+        for (String headerName : headers.keySet()) {
+            clientSocket.getOutputStream().write((headerName + ": " + headers.get(headerName) + "\r\n").getBytes());
+        }
+        clientSocket.getOutputStream().write(("\r\n").getBytes());
+        clientSocket.getOutputStream().write(body.getBytes());
     }
 }
