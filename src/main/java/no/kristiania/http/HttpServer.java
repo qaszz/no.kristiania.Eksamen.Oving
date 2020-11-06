@@ -34,7 +34,9 @@ public class HttpServer{
         ProjectDao projectDao = new ProjectDao(dataSource);
         controllers = Map.of(
                 "/api/newProject", new ProjectPostController(projectDao),
-                "/api/projects", new ProjectGetController(projectDao)
+                "/api/projects", new ProjectGetController(projectDao),
+                "/api/projectOptions", new ProjectOptionsController(projectDao),
+                "/api/statusOptions", new StatusOptionsController(projectDao)
         );
         serverSocket = new ServerSocket(port);
         logger.warn("Server started on port {}", serverSocket.getLocalPort());

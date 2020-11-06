@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update project | KristianiaProjekt</title>
+</head>
+<body>
+<h2>Update projects</h2>
+
+<form method="POST" action="/api/updateProject">
+    <p>Project <select name="projectId" id="projectId"></select></p>
+    <p>Status <input list="statusId" name="status"><datalist id="statusId"></datalist></p>
+    <button>Submit</button>
+</form>
+</body>
+<script>
+    fetch("/api/projectOptions")
+        .then(function(response) {
+            return response.text();
+        }).then(function(html) {
+        document.getElementById("projectId").innerHTML = html;
+    });
+    fetch("/api/statusOptions")
+        .then(function(response) {
+            return response.text();
+        }).then(function(html) {
+        document.getElementById("statusId").innerHTML = html;
+    });
+
+</script>
+</html>
