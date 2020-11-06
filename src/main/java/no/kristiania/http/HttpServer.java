@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class HttpServer {
+public class HttpServer{
 
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
     public static final String connection = "Connection: close";

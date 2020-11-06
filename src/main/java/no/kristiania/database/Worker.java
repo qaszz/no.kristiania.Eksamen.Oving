@@ -8,7 +8,7 @@ public class Worker {
     private Long id;
 
     public String getName() {
-        return name;
+        return URLDecoder.decode(name);
     }
 
     public void setName(String name) {
