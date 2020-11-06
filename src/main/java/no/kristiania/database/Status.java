@@ -22,4 +22,5 @@ public class Status {
     public Long getId() {
         return id;
     }
+
 }

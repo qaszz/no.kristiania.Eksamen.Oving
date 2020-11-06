@@ -53,7 +53,7 @@ class StatusDaoTest {
     }
 
     private String exampleStatusName() {
-        String[] options = { "Bedroom project", "Kitchen project", "Building project", "Park project"};
+        String[] options = { "Not started", "Started", "Finished"};
         return options[random.nextInt(options.length)];
     }
 
