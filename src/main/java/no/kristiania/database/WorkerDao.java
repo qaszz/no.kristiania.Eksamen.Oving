@@ -5,13 +5,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkerDao {
+public class WorkerDao extends AbstractDao<Worker>{
 
-    private DataSource dataSource;
 
     public WorkerDao(DataSource dataSource) {
-
-        this.dataSource = dataSource;
+        super(dataSource);
     }
 
     public void insert(Worker worker) throws SQLException {
@@ -33,21 +31,11 @@ public class WorkerDao {
     }
 
     public Worker retrieve(Long id) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers WHERE id = ?")) {
-                statement.setLong(1,id);
-                try (ResultSet rs = statement.executeQuery()) {
-                    if (rs.next()) {
-                        return mapRow(rs);
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        }
+        return retrieve(id, "SELECT * FROM workers WHERE id = ?");
     }
 
-    private Worker mapRow(ResultSet rs) throws SQLException {
+    @Override
+    protected Worker mapRow(ResultSet rs) throws SQLException {
         Worker worker = new Worker();
         worker.setId(rs.getLong("id"));
         worker.setName(rs.getString("worker_name"));
