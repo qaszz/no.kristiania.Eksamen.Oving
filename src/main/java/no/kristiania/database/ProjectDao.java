@@ -5,11 +5,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectDao {
-    private DataSource dataSource;
+public class ProjectDao extends AbstractDao<Project> {
 
     public ProjectDao(DataSource dataSource) {
-        this.dataSource = dataSource;
+        super(dataSource);
     }
 
     public void insert(Project project) throws SQLException {
@@ -30,21 +29,11 @@ public class ProjectDao {
     }
 
     public Project retrieve(long id) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM projects WHERE id = ?")) {
-                statement.setLong(1, id);
-                try (ResultSet rs = statement.executeQuery()) {
-                    if (rs.next()) {
-                        return mapRowToProject(rs);
-                    } else {
-                        return null;
-                    }
-                }
-            }
-        }
+        return retrieve(id, "SELECT * FROM projects WHERE id = ?");
     }
 
-    private Project mapRowToProject(ResultSet rs) throws SQLException {
+    @Override
+    protected Project mapRow(ResultSet rs) throws SQLException {
         Project project = new Project();
         project.setId(rs.getLong("id"));
         project.setName(rs.getString("name"));
@@ -57,7 +46,7 @@ public class ProjectDao {
                 try (ResultSet rs = statement.executeQuery()) {
                     List<Project> projects = new ArrayList<>();
                     while (rs.next()) {
-                        projects.add(mapRowToProject(rs));
+                        projects.add(mapRow(rs));
                     }
                     return projects;
                 }
