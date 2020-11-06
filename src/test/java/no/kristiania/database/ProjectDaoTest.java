@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectDaoTest {
 
     private ProjectDao projectDao;
-    private Random random = new Random();
+    private static Random random = new Random();
 
     @BeforeEach
     void setUp() {
@@ -46,13 +46,13 @@ public class ProjectDaoTest {
                 .isEqualTo(project);
     }
 
-    private Project exampleProject() {
+    public static Project exampleProject() {
         Project project = new Project();
         project.setName(exampleProjectName());
         return project;
     }
 
-    private String exampleProjectName() {
+    private static String exampleProjectName() {
         String[] options = { "Bedroom project", "Kitchen project", "Building project", "Park project"};
         return options[random.nextInt(options.length)];
     }

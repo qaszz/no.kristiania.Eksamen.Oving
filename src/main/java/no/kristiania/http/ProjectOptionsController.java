@@ -12,7 +12,7 @@ public class ProjectOptionsController implements HttpController{
 
     @Override
     public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
-        String body = "<option>A</option><option>B</option>";
+        String body = getBody();
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Connection: close\r\n" +
                 "Content-Length: " + body.length() + "\r\n" +
@@ -20,5 +20,9 @@ public class ProjectOptionsController implements HttpController{
                 body;
 
         clientSocket.getOutputStream().write(response.getBytes());
+    }
+
+    public String getBody() {
+        return "<option>A</option><option>B</option>";
     }
 }
