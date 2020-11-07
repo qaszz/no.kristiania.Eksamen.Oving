@@ -14,8 +14,7 @@ public class UpdateWorkerController implements HttpController{
         this.workerDao = workerDao;
     }
 
-    @Override
-    public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
+    public HttpMessage handle(HttpMessage request) throws SQLException {
         QueryString requestParameter = new QueryString(request.getBody());
 
         Long workerId = Long.valueOf(requestParameter.getParameter("workerId"));
@@ -25,5 +24,12 @@ public class UpdateWorkerController implements HttpController{
 
         workerDao.update(worker);
 
+        return new HttpMessage("Okay");
+    }
+
+    @Override
+    public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
+        HttpMessage response = handle(request);
+        response.write(clientSocket);
     }
 }

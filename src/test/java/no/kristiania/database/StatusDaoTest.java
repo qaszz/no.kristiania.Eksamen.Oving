@@ -40,7 +40,7 @@ class StatusDaoTest {
         Status status1 = exampleStatus();
         Status status = exampleStatus();
         statusDao.insert(status);
-        assertThat(status).hasNoNullFieldsOrProperties();
+        assertThat(status).hasNoNullFieldsOrPropertiesExcept("projectId");
         assertThat(statusDao.retrieve(status.getId()))
                 .usingRecursiveComparison()
                 .isEqualTo(status);
