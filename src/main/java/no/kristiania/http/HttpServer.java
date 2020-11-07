@@ -26,8 +26,8 @@ public class HttpServer{
     public static final String connection = "Connection: close";
     private Map<String, HttpController> controllers;
 
-    private final WorkerDao workerDao;
-    private final ServerSocket serverSocket;
+    private WorkerDao workerDao;
+    private ServerSocket serverSocket;
 
     public HttpServer(int port, DataSource dataSource) throws IOException{
         workerDao = new WorkerDao(dataSource);
@@ -40,7 +40,7 @@ public class HttpServer{
                 "/api/updateProject", new UpdateWorkerController(workerDao)
         );
         serverSocket = new ServerSocket(port);
-        logger.warn("Server started on port {}", serverSocket.getLocalPort());
+        logger.info("Server started on port {}", serverSocket.getLocalPort());
 
         new Thread(() ->{
             while (true) {
@@ -76,7 +76,7 @@ public class HttpServer{
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
             } else if (requestPath.equals("/api/projectworkers")){
-                handleGetworkers(clientSocket);
+                handleGetWorkers(clientSocket);
             } else {
                 HttpController controller = controllers.get(requestPath);
                 if (controller != null) {
@@ -146,7 +146,7 @@ public class HttpServer{
         }
     }
 
-    private void handleGetworkers(Socket clientSocket) throws IOException, SQLException {
+    private void handleGetWorkers(Socket clientSocket) throws IOException, SQLException {
         String body = "<ul>";
         for (Worker worker : workerDao.list()) {
             body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
@@ -203,7 +203,7 @@ public class HttpServer{
 
     }
 
-    public List<Worker> getworkers() throws SQLException {
+    public List<Worker> getWorkers() throws SQLException {
         return workerDao.list();
     }
 }

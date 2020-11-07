@@ -14,11 +14,11 @@ public class Project {
         this.projectName = name;
     }
 
+    public static Integer getId() {
+        return id;
+    }
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public static Integer getId() {
-        return id;
-    }
 }
