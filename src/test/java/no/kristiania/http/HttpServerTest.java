@@ -110,7 +110,7 @@ class HttpServerTest {
     void shouldPostNewProject() throws IOException, SQLException {
         String requestBody = "name=HousingProject";
         HttpClient postClient = new HttpClient("localhost", server.getPort(), "/api/newProject", "POST", requestBody);
-        assertEquals(200, postClient.getStatusCode());
+        assertEquals(302, postClient.getStatusCode());
 
         HttpClient getClient = new HttpClient("localhost", server.getPort(), "/api/projects");
         assertThat(getClient.getResponseBody()).contains("<li>HousingProject</li>");

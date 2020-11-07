@@ -13,23 +13,22 @@ public class ProjectPostController implements HttpController{
     public ProjectPostController(ProjectDao projectDao) {
         this.projectDao = projectDao;
     }
-
-    @Override
-    public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
+    public HttpMessage handle(HttpMessage request) throws SQLException {
         QueryString requestParameter = new QueryString(request.getBody());
 
         Project project = new Project();
         project.setName(requestParameter.getParameter("name"));
         projectDao.insert(project);
 
-        String body = "You have added a new project!";
-        String response = "HTTP/1.1 200 OK\r\n" +
-                "Connection: close\r\n" +
-                "Content-Length: " + body.length() + "\r\n" +
-                "\r\n" +
-                body;
+        HttpMessage redirect = new HttpMessage();
+        redirect.setStartLine("HTTP/1.1 302 Redirect");
+        redirect.getHeaders().put("Location", "http://localhost:8080/index.html");
+        return redirect;
+    }
+    @Override
+    public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
 
-        clientSocket.getOutputStream().write(response.getBytes());
-
+        HttpMessage response = handle(request);
+        response.write(clientSocket);
     }
 }
