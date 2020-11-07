@@ -106,7 +106,7 @@ class HttpServerTest {
         assertThat(client.getResponseBody()).contains("<li>Name: Chris<br> Email Address: haha@gmail.com</li>");
     }
 
-  /*  @Test
+ /*   @Test
     void shouldFilterWorkersByProject() throws SQLException, IOException {
         WorkerDao workerDao = new WorkerDao(dataSource);
         Worker chris = new Worker();
