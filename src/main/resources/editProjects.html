@@ -9,7 +9,7 @@
 
 <form method="POST" action="/api/updateProject">
     <p>Project <select name="projectId" id="projectId"></select></p>
-    <p>Member <select name="memberId" id="memberId"></select></p>
+    <p>worker <select name="workerId" id="workerId"></select></p>
     <p>Status <input list="statusId" name="status"><datalist id="statusId"></datalist></p>
     <button>Submit</button>
 </form>
@@ -30,11 +30,11 @@
         }).then(function(html) {
         document.getElementById("statusId").innerHTML = html;
     });
-    fetch("/api/memberOptions")
+    fetch("/api/workerOptions")
             .then(function(response) {
                 return response.text();
             }).then(function(html) {
-            document.getElementById("memberId").innerHTML = html;
+            document.getElementById("workerId").innerHTML = html;
         });
 
 </script>

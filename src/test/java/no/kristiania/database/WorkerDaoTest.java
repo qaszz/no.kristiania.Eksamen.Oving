@@ -1,6 +1,6 @@
 package no.kristiania.database;
 
-import no.kristiania.http.MemberOptionsController;
+import no.kristiania.http.WorkerOptionsController;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class WorkerDaoTest {
 
     @Test
     void shouldReturnWorkerAsOptions() throws SQLException {
-        MemberOptionsController controller = new MemberOptionsController(workerDao);
+        WorkerOptionsController controller = new WorkerOptionsController(workerDao);
         Worker worker = WorkerDaoTest.exampleWorker();
         workerDao.insert(worker);
 

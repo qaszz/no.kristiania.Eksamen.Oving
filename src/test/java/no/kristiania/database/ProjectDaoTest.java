@@ -2,7 +2,7 @@ package no.kristiania.database;
 
 import no.kristiania.http.HttpMessage;
 import no.kristiania.http.ProjectOptionsController;
-import no.kristiania.http.UpdateProjectController;
+import no.kristiania.http.UpdateWorkerController;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +19,7 @@ public class ProjectDaoTest {
     private ProjectDao projectDao;
     private static Random random = new Random();
     private WorkerDao workerDao;
+
 
     @BeforeEach
     void setUp() {
@@ -46,7 +47,7 @@ public class ProjectDaoTest {
         Project project2 = exampleProject();
         Project project = exampleProject();
         projectDao.insert(project);
-        assertThat(project).hasNoNullFieldsOrPropertiesExcept("memberId");
+        assertThat(project).hasNoNullFieldsOrPropertiesExcept("workerId");
         assertThat(projectDao.retrieve(project.getId()))
                 .usingRecursiveComparison()
                 .isEqualTo(project);
@@ -63,8 +64,8 @@ public class ProjectDaoTest {
     }
 
     @Test
-    void shouldUpdateExisitingProjectWithAssignedWMember() throws IOException, SQLException {
-        UpdateProjectController controller = new UpdateProjectController(projectDao);
+    void shouldUpdateExistingProjectWithAssignedWorker() throws IOException, SQLException {
+        UpdateWorkerController controller = new UpdateWorkerController(workerDao);
 
         Project project = exampleProject();
         projectDao.insert(project);
@@ -72,7 +73,7 @@ public class ProjectDaoTest {
         Worker worker = WorkerDaoTest.exampleWorker();
         workerDao.insert(worker);
 
-        String body = "projectId=" + project.getId() + "&memberId=" + worker.getId();
+        String body = "projectId=" + project.getId() + "&workerId=" + worker.getId();
         controller.handle(new HttpMessage(body), null);
         assertThat(workerDao.retrieve(worker.getId()).getId())
                 .isEqualTo(project.getId());

@@ -30,6 +30,10 @@ public class WorkerDao extends AbstractDao<Worker>{
         }
     }
 
+    public void update(Worker worker) {
+
+    }
+
     public Worker retrieve(Long id) throws SQLException {
         return retrieve(id, "SELECT * FROM workers WHERE id = ?");
     }
