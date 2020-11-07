@@ -82,7 +82,7 @@ class WorkerDaoTest {
         assertThat(workerDao.retrieve(worker.getId()).getProjectId())
                 .isEqualTo(project.getId());
         assertThat(response.getStartLine())
-                .isEqualTo("HTTP/1.1 302 Redirect\r\n");
+                .isEqualTo("HTTP/1.1 302 Redirect");
         assertThat(response.getHeaders().get("Location"))
                 .isEqualTo("http://localhost:8080/index.html");
     }
