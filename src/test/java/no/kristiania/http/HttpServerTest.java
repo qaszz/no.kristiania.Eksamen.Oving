@@ -1,5 +1,7 @@
 package no.kristiania.http;
 
+import no.kristiania.database.Project;
+import no.kristiania.database.ProjectDao;
 import no.kristiania.database.Worker;
 import no.kristiania.database.WorkerDao;
 import org.flywaydb.core.Flyway;
@@ -96,7 +98,7 @@ class HttpServerTest {
     }
 
     @Test
-    void shouldReturnExistingworker() throws IOException, SQLException {
+    void shouldReturnExistingWorker() throws IOException, SQLException {
         WorkerDao workerDao = new WorkerDao(dataSource);
         Worker worker = new Worker();
         worker.setName("Chris");
@@ -104,6 +106,33 @@ class HttpServerTest {
         workerDao.insert(worker);
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/projectworkers");
         assertThat(client.getResponseBody()).contains("<li>Name: Chris<br> Email Address: haha@gmail.com</li>");
+    }
+
+    @Test
+    void shouldFilterWorkersByProject() throws SQLException, IOException {
+        WorkerDao workerDao = new WorkerDao(dataSource);
+        Worker chris = new Worker();
+        chris.setName("Chris");
+        chris.setEmail("haha@gmail.com");
+        workerDao.insert(chris);
+
+        Worker carlo = new Worker();
+        carlo.setName("Carlo");
+        carlo.setEmail("haha@gmail.com");
+        workerDao.insert(carlo);
+
+        ProjectDao projectDao = new ProjectDao(dataSource);
+        Project housing = new Project();
+        housing.setName("Housing");
+        projectDao.insert(housing);
+
+        carlo.setProjectId(housing.getId());
+        workerDao.update(carlo);
+
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/projectworkers?projectId=" + housing.getId());
+        assertThat(client.getResponseBody())
+                .contains("<li>Housing</li>")
+                .doesNotContain("<li>Name: Chris<br> Email Address: haha@gmail.com</li>");
     }
 
     @Test

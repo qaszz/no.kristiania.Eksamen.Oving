@@ -76,7 +76,7 @@ public class HttpServer{
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
             } else if (requestPath.equals("/api/projectworkers")){
-                handleGetWorkers(clientSocket);
+                handleGetWorkers(clientSocket, requestTarget, questionPos);
             } else {
                 HttpController controller = controllers.get(requestPath);
                 if (controller != null) {
@@ -146,7 +146,7 @@ public class HttpServer{
         }
     }
 
-    private void handleGetWorkers(Socket clientSocket) throws IOException, SQLException {
+    private void handleGetWorkers(Socket clientSocket, String requestTarget, int questionPos) throws IOException, SQLException {
         String body = "<ul>";
         for (Worker worker : workerDao.list()) {
             body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
