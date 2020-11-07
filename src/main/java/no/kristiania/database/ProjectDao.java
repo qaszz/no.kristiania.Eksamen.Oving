@@ -22,20 +22,20 @@ public class ProjectDao extends AbstractDao<Project> {
 
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     generatedKeys.next();
-                    project.setId(generatedKeys.getLong("id"));
+                    project.setId(generatedKeys.getInt("id"));
                 }
             }
         }
     }
 
-    public Project retrieve(long id) throws SQLException {
+    public Project retrieve(Integer id) throws SQLException {
         return retrieve(id, "SELECT * FROM projects WHERE id = ?");
     }
 
     @Override
     protected Project mapRow(ResultSet rs) throws SQLException {
         Project project = new Project();
-        project.setId(rs.getLong("id"));
+        project.setId(rs.getInt("id"));
         project.setName(rs.getString("name"));
         return project;
     }

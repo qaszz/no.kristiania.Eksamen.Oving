@@ -15,10 +15,10 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 class WorkerDaoTest {
 
-    private static Project defaultProject;
     private WorkerDao workerDao;
     private static Random random = new Random();
     private ProjectDao projectDao;
+    private Project defaultProject;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -50,7 +50,7 @@ class WorkerDaoTest {
         workerDao.insert(exampleWorker());
         Worker worker = exampleWorker();
         workerDao.insert(worker);
-        assertThat(worker).hasNoNullFieldsOrProperties();
+        assertThat(worker).hasNoNullFieldsOrPropertiesExcept("projectId");
         assertThat(workerDao.retrieve(worker.getId()))
                 .usingRecursiveComparison()
                 .isEqualTo(worker);
@@ -59,7 +59,7 @@ class WorkerDaoTest {
     @Test
     void shouldReturnWorkerAsOptions() throws SQLException {
         WorkerOptionsController controller = new WorkerOptionsController(workerDao);
-        Worker worker = WorkerDaoTest.exampleWorker();
+        Worker worker = exampleWorker();
         workerDao.insert(worker);
 
         assertThat(controller.getBody())
@@ -88,7 +88,7 @@ class WorkerDaoTest {
     }
 
 
-    public static Worker exampleWorker() {
+    private Worker exampleWorker() {
         Worker worker = new Worker();
         worker.setName(exampleWorkerName());
         worker.setEmail("username" + random.nextInt(1000) + "@gmail.com");

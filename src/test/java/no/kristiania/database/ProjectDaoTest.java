@@ -15,7 +15,6 @@ public class ProjectDaoTest {
 
     private ProjectDao projectDao;
     private static Random random = new Random();
-    private WorkerDao workerDao;
 
 
     @BeforeEach
@@ -24,7 +23,6 @@ public class ProjectDaoTest {
         dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
         Flyway.configure().dataSource(dataSource).load().migrate();
         projectDao = new ProjectDao(dataSource);
-        workerDao = new WorkerDao(dataSource);
     }
 
     @Test

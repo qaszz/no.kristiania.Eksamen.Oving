@@ -89,7 +89,7 @@ class HttpServerTest {
     @Test
     void shouldPostNewworker() throws IOException, SQLException {
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/workers", "POST", "worker_name=Carlo&email_address=carlo@gmail.com");
-        assertEquals(200, client.getStatusCode());
+        assertEquals(302, client.getStatusCode());
         assertThat(server.getworkers())
                 .extracting(Worker::getName)
                 .contains("Carlo");

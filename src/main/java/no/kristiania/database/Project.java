@@ -3,7 +3,7 @@ package no.kristiania.database;
 import java.net.URLDecoder;
 
 public class Project {
-    private static long id;
+    private static Integer id;
     private String projectName;
 
     public String getName() {
@@ -14,11 +14,11 @@ public class Project {
         this.projectName = name;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public static long getId() {
+    public static Integer getId() {
         return id;
     }
 }

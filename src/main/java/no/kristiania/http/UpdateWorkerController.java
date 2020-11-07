@@ -8,19 +8,25 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 public class UpdateWorkerController implements HttpController{
-    private final WorkerDao workerDao;
+    private WorkerDao workerDao;
 
     public UpdateWorkerController(WorkerDao workerDao) {
         this.workerDao = workerDao;
     }
 
+    @Override
+    public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
+        HttpMessage response = handle(request);
+        response.write(clientSocket);
+    }
+
     public HttpMessage handle(HttpMessage request) throws SQLException {
         QueryString requestParameter = new QueryString(request.getBody());
 
-        Long workerId = Long.valueOf(requestParameter.getParameter("workerId"));
-        Long projectId = Long.valueOf(requestParameter.getParameter("projectId"));
+        Integer workerId = Integer.valueOf(requestParameter.getParameter("workerId"));
+        Integer projectId = Integer.valueOf(requestParameter.getParameter("projectId"));
         Worker worker = workerDao.retrieve(workerId);
-        worker.setId(workerId);
+        worker.setProjectId(projectId);
 
         workerDao.update(worker);
 
@@ -30,9 +36,4 @@ public class UpdateWorkerController implements HttpController{
         return redirect;
     }
 
-    @Override
-    public void handle(HttpMessage request, Socket clientSocket) throws IOException, SQLException {
-        HttpMessage response = handle(request);
-        response.write(clientSocket);
-    }
 }

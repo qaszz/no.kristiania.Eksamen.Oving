@@ -37,8 +37,7 @@ public class HttpServer{
                 "/api/projects", new ProjectGetController(projectDao),
                 "/api/projectOptions", new ProjectOptionsController(projectDao),
                 "/api/workerOptions", new WorkerOptionsController(workerDao),
-                "/api/updateProject", new UpdateWorkerController(workerDao),
-                "/api/statusOptions", new StatusOptionsController(projectDao)
+                "/api/updateProject", new UpdateWorkerController(workerDao)
         );
         serverSocket = new ServerSocket(port);
         logger.warn("Server started on port {}", serverSocket.getLocalPort());
@@ -94,21 +93,23 @@ public class HttpServer{
     }
 
     private void handlePostProject(Socket clientSocket, HttpMessage request) throws SQLException, IOException {
+        HttpMessage response = handlePostProject(request);
+        response.write(clientSocket);
+    }
+
+    private HttpMessage handlePostProject(HttpMessage request) throws SQLException {
         QueryString requestParameter = new QueryString(request.getBody());
 
         Worker worker = new Worker();
         worker.setName(requestParameter.getParameter("worker_name"));
         worker.setEmail(requestParameter.getParameter("email_address"));
         workerDao.insert(worker);
-        String body = "You have added a new worker!";
-        String response = "HTTP/1.1 200 OK\r\n" +
-                connection + "\r\n" +
-                "Content-Length: " + body.length() + "\r\n" +
-                "\r\n" +
-                body;
-
-        clientSocket.getOutputStream().write(response.getBytes());
+        HttpMessage redirect = new HttpMessage();
+        redirect.setStartLine("HTTP/1.1 302 Redirect");
+        redirect.getHeaders().put("Location", "http://localhost:8080/workers.html");
+        return redirect;
     }
+
     public int getPort(){
         return serverSocket.getLocalPort();
     }

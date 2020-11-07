@@ -15,16 +15,17 @@ public class WorkerDao extends AbstractDao<Worker>{
     public void insert(Worker worker) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO workers (worker_name, email) values (?, ?)",
+                    "INSERT INTO workers (worker_name, email, project_id) values (?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
                 statement.setString(1, worker.getName());
                 statement.setString(2, worker.getEmail());
+                statement.setObject(3, worker.getProjectId());
                 statement.executeUpdate();
 
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     generatedKeys.next();
-                    worker.setId(generatedKeys.getLong("id"));
+                    worker.setId(generatedKeys.getInt("id"));
                 }
             }
         }
@@ -35,23 +36,23 @@ public class WorkerDao extends AbstractDao<Worker>{
             try (PreparedStatement statement = connection.prepareStatement(
                     "UPDATE workers set project_id = ? WHERE id = ?"
             )) {
-                statement.setLong(1, worker.getId());
-                statement.setLong(2, worker.getProjectId());
+                statement.setInt(1, worker.getProjectId());
+                statement.setInt(2, worker.getId());
                 statement.executeUpdate();
             }
         }
     }
 
 
-    public Worker retrieve(Long id) throws SQLException {
+    public Worker retrieve(Integer id) throws SQLException {
         return retrieve(id, "SELECT * FROM workers WHERE id = ?");
     }
 
     @Override
     protected Worker mapRow(ResultSet rs) throws SQLException {
         Worker worker = new Worker();
-        worker.setId(rs.getLong("id"));
-        worker.setProjectId(rs.getLong("project_id"));
+        worker.setId(rs.getInt("id"));
+        worker.setProjectId(rs.getInt("project_id"));
         worker.setName(rs.getString("worker_name"));
         worker.setEmail(rs.getString("email"));
         return worker;

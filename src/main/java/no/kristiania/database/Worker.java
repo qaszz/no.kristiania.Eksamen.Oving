@@ -5,7 +5,7 @@ import java.net.URLDecoder;
 public class Worker {
     private String name;
     private String email;
-    private Long id;
+    private Integer id;
     private Integer projectId;
 
     public String getName() {
@@ -16,11 +16,11 @@ public class Worker {
         this.name = name;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -32,12 +32,11 @@ public class Worker {
         this.email = email;
     }
 
-    public long getProjectId() {
-        long projectId = Project.getId();
+    public Integer getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(long project_id) {
+    public void setProjectId(Integer projectId) {
         this.projectId = projectId;
     }
 }

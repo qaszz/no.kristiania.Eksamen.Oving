@@ -22,7 +22,7 @@ public class ProjectPostController implements HttpController{
 
         HttpMessage redirect = new HttpMessage();
         redirect.setStartLine("HTTP/1.1 302 Redirect");
-        redirect.getHeaders().put("Location", "http://localhost:8080/index.html");
+        redirect.getHeaders().put("Location", "http://localhost:8080/projects.html");
         return redirect;
     }
     @Override
