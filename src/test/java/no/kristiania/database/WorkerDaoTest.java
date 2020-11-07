@@ -1,5 +1,6 @@
 package no.kristiania.database;
 
+import no.kristiania.http.MemberOptionsController;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WorkerDaoTest {
 
     private WorkerDao workerDao;
-    private final Random random = new Random();
+    private static Random random = new Random();
 
     @BeforeEach
     void setUp() {
@@ -46,14 +47,24 @@ class WorkerDaoTest {
                 .isEqualTo(worker);
     }
 
-    private Worker exampleWorker() {
+    @Test
+    void shouldReturnWorkerAsOptions() throws SQLException {
+        MemberOptionsController controller = new MemberOptionsController(workerDao);
+        Worker worker = WorkerDaoTest.exampleWorker();
+        workerDao.insert(worker);
+
+        assertThat(controller.getBody())
+                .contains("<option value=" + worker.getId() + ">" + worker.getName() + "</option>");
+    }
+
+    public static Worker exampleWorker() {
         Worker worker = new Worker();
         worker.setName(exampleWorkerName());
         worker.setEmail("username" + random.nextInt(1000) + "@gmail.com");
         return worker;
     }
 
-    private String exampleWorkerName() {
+    private static String exampleWorkerName() {
         String[] options = { "Ole", "Ali", "Chris", "Bjørn"};
         return options[random.nextInt(options.length)];
     }
