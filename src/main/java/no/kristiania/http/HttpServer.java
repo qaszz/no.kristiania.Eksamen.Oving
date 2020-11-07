@@ -34,7 +34,11 @@ public class HttpServer{
         ProjectDao projectDao = new ProjectDao(dataSource);
         controllers = Map.of(
                 "/api/newProject", new ProjectPostController(projectDao),
-                "/api/projects", new ProjectGetController(projectDao)
+                "/api/projects", new ProjectGetController(projectDao),
+                "/api/projectOptions", new ProjectOptionsController(projectDao),
+                "/api/workerOptions", new WorkerOptionsController(workerDao),
+                "/api/updateProject", new UpdateWorkerController(workerDao),
+                "/api/statusOptions", new StatusOptionsController(projectDao)
         );
         serverSocket = new ServerSocket(port);
         logger.warn("Server started on port {}", serverSocket.getLocalPort());
@@ -64,7 +68,7 @@ public class HttpServer{
         String requestPath = questionPos != -1 ? requestTarget.substring(0, questionPos) : requestTarget;
 
         if (requestMethod.equals("POST")){
-            if (requestPath.equals("/api/members")){
+            if (requestPath.equals("/api/workers")){
                 handlePostProject(clientSocket, request);
             } else {
                 getController(requestPath).handle(request, clientSocket);
@@ -72,8 +76,8 @@ public class HttpServer{
         } else {
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
-            } else if (requestPath.equals("/api/projectMembers")){
-                handleGetMembers(clientSocket);
+            } else if (requestPath.equals("/api/projectworkers")){
+                handleGetworkers(clientSocket);
             } else {
                 HttpController controller = controllers.get(requestPath);
                 if (controller != null) {
@@ -141,10 +145,10 @@ public class HttpServer{
         }
     }
 
-    private void handleGetMembers(Socket clientSocket) throws IOException, SQLException {
+    private void handleGetworkers(Socket clientSocket) throws IOException, SQLException {
         String body = "<ul>";
-        for (Worker member : workerDao.list()) {
-            body += "<li>Name: " + member.getName() + "<br> Email Address: " + member.getEmail() + "</li>";
+        for (Worker worker : workerDao.list()) {
+            body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
         }
 
         body+= "</ul>";
@@ -198,7 +202,7 @@ public class HttpServer{
 
     }
 
-    public List<Worker> getMembers() throws SQLException {
+    public List<Worker> getworkers() throws SQLException {
         return workerDao.list();
     }
 }

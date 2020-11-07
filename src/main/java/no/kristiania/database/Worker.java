@@ -6,6 +6,7 @@ public class Worker {
     private String name;
     private String email;
     private Long id;
+    private Integer projectId;
 
     public String getName() {
         return URLDecoder.decode(name);
@@ -29,5 +30,14 @@ public class Worker {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public long getProjectId() {
+        long projectId = Project.getId();
+        return projectId;
+    }
+
+    public void setProjectId(long project_id) {
+        this.projectId = projectId;
     }
 }

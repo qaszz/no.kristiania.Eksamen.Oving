@@ -6,14 +6,17 @@
 </head>
 <body>
 <h1> List of workers</h1>
-<div id="projectMembers"></div>
+<div id="projectworkers"></div>
+<div>
+    <a href="index.html">Return to front page</a>
+</div>
 </body>
 <script>
-    fetch("/api/projectMembers")
+    fetch("/api/projectworkers")
         .then(function(response) {
             return response.text();
         }).then(function(html) {
-        document.getElementById("projectMembers").innerHTML = html;
+        document.getElementById("projectworkers").innerHTML = html;
     });
 </script>
 </html>

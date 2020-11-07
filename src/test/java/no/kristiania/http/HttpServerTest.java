@@ -87,22 +87,22 @@ class HttpServerTest {
     }
 
     @Test
-    void shouldPostNewMember() throws IOException, SQLException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/members", "POST", "worker_name=Carlo&email_address=carlo@gmail.com");
+    void shouldPostNewworker() throws IOException, SQLException {
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/workers", "POST", "worker_name=Carlo&email_address=carlo@gmail.com");
         assertEquals(200, client.getStatusCode());
-        assertThat(server.getMembers())
+        assertThat(server.getworkers())
                 .extracting(Worker::getName)
                 .contains("Carlo");
     }
 
     @Test
-    void shouldReturnExistingMember() throws IOException, SQLException {
+    void shouldReturnExistingworker() throws IOException, SQLException {
         WorkerDao workerDao = new WorkerDao(dataSource);
         Worker worker = new Worker();
         worker.setName("Chris");
         worker.setEmail("haha@gmail.com");
         workerDao.insert(worker);
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/projectMembers");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/projectworkers");
         assertThat(client.getResponseBody()).contains("<li>Name: Chris<br> Email Address: haha@gmail.com</li>");
     }
 

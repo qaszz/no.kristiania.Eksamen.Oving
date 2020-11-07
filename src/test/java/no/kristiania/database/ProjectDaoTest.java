@@ -1,5 +1,6 @@
 package no.kristiania.database;
 
+import no.kristiania.http.ProjectOptionsController;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectDaoTest {
 
     private ProjectDao projectDao;
-    private Random random = new Random();
+    private static Random random = new Random();
+    private WorkerDao workerDao;
+
 
     @BeforeEach
     void setUp() {
@@ -21,6 +24,7 @@ public class ProjectDaoTest {
         dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
         Flyway.configure().dataSource(dataSource).load().migrate();
         projectDao = new ProjectDao(dataSource);
+        workerDao = new WorkerDao(dataSource);
     }
 
     @Test
@@ -46,13 +50,23 @@ public class ProjectDaoTest {
                 .isEqualTo(project);
     }
 
-    private Project exampleProject() {
+    @Test
+    void shouldReturnProjectAsOptions() throws SQLException {
+        ProjectOptionsController controller = new ProjectOptionsController(projectDao);
+        Project project = ProjectDaoTest.exampleProject();
+        projectDao.insert(project);
+
+        assertThat(controller.getBody())
+                .contains("<option value=" + project.getId() + ">" + project.getName() + "</option>");
+    }
+
+    public static Project exampleProject() {
         Project project = new Project();
         project.setName(exampleProjectName());
         return project;
     }
 
-    private String exampleProjectName() {
+    private static String exampleProjectName() {
         String[] options = { "Bedroom project", "Kitchen project", "Building project", "Park project"};
         return options[random.nextInt(options.length)];
     }
