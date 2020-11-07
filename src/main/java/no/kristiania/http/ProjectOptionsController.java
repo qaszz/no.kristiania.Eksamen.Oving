@@ -23,7 +23,7 @@ public class ProjectOptionsController implements HttpController{
     public String getBody() throws SQLException {
         String body ="";
         for (Project project : projectDao.list()) {
-            body +="<option value=" + Project.getId() + ">" + project.getName() +"</option>";
+            body +="<option value=" + project.getId() + ">" + project.getName() +"</option>";
         }
 
         return body;
