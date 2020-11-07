@@ -147,9 +147,16 @@ public class HttpServer{
     }
 
     private void handleGetWorkers(Socket clientSocket, String requestTarget, int questionPos) throws IOException, SQLException {
+        Integer projectId = null;
+        if (questionPos != -1){
+            projectId = Integer.valueOf(new QueryString(requestTarget.substring(questionPos+1))
+                    .getParameter("projectId"));
+        }
         String body = "<ul>";
         for (Worker worker : workerDao.list()) {
-            body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
+            if (projectId == null || projectId.equals(worker.getProjectId())) {
+                body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
+            }
         }
 
         body+= "</ul>";
