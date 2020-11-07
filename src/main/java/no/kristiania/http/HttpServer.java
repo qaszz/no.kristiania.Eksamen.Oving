@@ -155,9 +155,8 @@ public class HttpServer{
         List<Worker> list = projectId == null ? workerDao.list() : workerDao.listWorkersByProjectId(projectId);
         String body = "<ul>";
         for (Worker worker : list) {
-            if (projectId == null || projectId.equals(worker.getProjectId())) {
-                body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
-            }
+            body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
+
         }
 
         body+= "</ul>";
