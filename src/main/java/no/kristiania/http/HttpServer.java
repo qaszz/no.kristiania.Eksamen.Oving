@@ -76,7 +76,7 @@ public class HttpServer{
             if (requestPath.equals("/echo")) {
                 handleEchoRequest(clientSocket, requestTarget, questionPos);
             } else if (requestPath.equals("/api/projectworkers")){
-                handleGetWorkers(clientSocket);
+                handleGetWorkers(clientSocket, requestTarget, questionPos);
             } else {
                 HttpController controller = controllers.get(requestPath);
                 if (controller != null) {
@@ -146,10 +146,17 @@ public class HttpServer{
         }
     }
 
-    private void handleGetWorkers(Socket clientSocket) throws IOException, SQLException {
+    private void handleGetWorkers(Socket clientSocket, String requestTarget, int questionPos) throws IOException, SQLException {
+        Integer projectId = null;
+        if (questionPos != -1){
+            projectId = Integer.valueOf(new QueryString(requestTarget.substring(questionPos+1))
+                    .getParameter("projectId"));
+        }
+        List<Worker> list = projectId == null ? workerDao.list() : workerDao.listWorkersByProjectId(projectId);
         String body = "<ul>";
-        for (Worker worker : workerDao.list()) {
+        for (Worker worker : list) {
             body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
+
         }
 
         body+= "</ul>";

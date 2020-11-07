@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpServerTest {
 
@@ -96,7 +96,7 @@ class HttpServerTest {
     }
 
     @Test
-    void shouldReturnExistingworker() throws IOException, SQLException {
+    void shouldReturnExistingWorker() throws IOException, SQLException {
         WorkerDao workerDao = new WorkerDao(dataSource);
         Worker worker = new Worker();
         worker.setName("Chris");
@@ -105,6 +105,33 @@ class HttpServerTest {
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/projectworkers");
         assertThat(client.getResponseBody()).contains("<li>Name: Chris<br> Email Address: haha@gmail.com</li>");
     }
+
+ /*   @Test
+    void shouldFilterWorkersByProject() throws SQLException, IOException {
+        WorkerDao workerDao = new WorkerDao(dataSource);
+        Worker chris = new Worker();
+        chris.setName("Chris");
+        chris.setEmail("haha@gmail.com");
+        workerDao.insert(chris);
+
+        Worker carlo = new Worker();
+        carlo.setName("Carlo");
+        carlo.setEmail("haha@gmail.com");
+        workerDao.insert(carlo);
+
+        ProjectDao projectDao = new ProjectDao(dataSource);
+        Project project = new Project();
+        project.setName("Housing");
+        projectDao.insert(project);
+
+        carlo.setProjectId(project.getId());
+        workerDao.update(carlo);
+
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/projectworkers?projectId=" + project.getId());
+        assertThat(client.getResponseBody())
+                .contains("<li>Housing</li>")
+                .doesNotContain("<li>Name: Carlo<br> Email Address: haha@gmail.com</li>");
+    }*/
 
     @Test
     void shouldPostNewProject() throws IOException, SQLException {

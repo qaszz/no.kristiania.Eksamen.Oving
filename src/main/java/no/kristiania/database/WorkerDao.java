@@ -63,6 +63,21 @@ public class WorkerDao extends AbstractDao<Worker>{
         }
     }
 
+    public List<Worker> listWorkersByProjectId(Integer projectId) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM workers WHERE project_id = ?")) {
+                statement.setInt(1, projectId);
+                try (ResultSet rs = statement.executeQuery()) {
+                    List<Worker> workers = new ArrayList<>();
+                    while (rs.next()) {
+                        workers.add(mapRow(rs));
+                    }
+                    return workers;
+                }
+            }
+        }
+    }
+
     @Override
     protected Worker mapRow(ResultSet rs) throws SQLException {
         Worker worker = new Worker();
@@ -72,4 +87,6 @@ public class WorkerDao extends AbstractDao<Worker>{
         worker.setEmail(rs.getString("email"));
         return worker;
     }
+
+
 }

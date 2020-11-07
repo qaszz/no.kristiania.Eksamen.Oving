@@ -45,6 +45,26 @@ class WorkerDaoTest {
     }
 
     @Test
+    void shouldListWorkersByProjects() throws SQLException {
+        Project project1 = ProjectDaoTest.exampleProject();;
+        projectDao.insert(project1);
+        Project project2 = ProjectDaoTest.exampleProject();;
+        projectDao.insert(project2);
+
+        Worker matchingWorker = exampleWorker();
+        matchingWorker.setProjectId(project1.getId());
+        workerDao.insert(matchingWorker);
+        Worker nonMatchingWorker = exampleWorker();
+        nonMatchingWorker.setProjectId(project2.getId());
+        workerDao.insert(nonMatchingWorker);
+
+        assertThat(workerDao.listWorkersByProjectId(project1.getId()))
+                .extracting(Worker::getId)
+                .contains(matchingWorker.getId())
+                .doesNotContain(nonMatchingWorker.getId());
+    }
+
+    @Test
     void shouldRetrieveAllWorkerProperties() throws SQLException {
         workerDao.insert(exampleWorker());
         workerDao.insert(exampleWorker());
