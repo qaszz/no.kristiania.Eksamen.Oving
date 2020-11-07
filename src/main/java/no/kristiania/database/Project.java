@@ -3,8 +3,8 @@ package no.kristiania.database;
 import java.net.URLDecoder;
 
 public class Project {
+    private static long id;
     private String projectName;
-    private long id;
 
     public String getName() {
         return URLDecoder.decode(projectName);
@@ -18,7 +18,7 @@ public class Project {
         this.id = id;
     }
 
-    public long getId() {
+    public static long getId() {
         return id;
     }
 }

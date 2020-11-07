@@ -30,9 +30,18 @@ public class WorkerDao extends AbstractDao<Worker>{
         }
     }
 
-    public void update(Worker worker) {
-
+    public void update(Worker worker) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE workers set project_id = ? WHERE id = ?"
+            )) {
+                statement.setLong(1, worker.getId());
+                statement.setLong(2, worker.getProjectId());
+                statement.executeUpdate();
+            }
+        }
     }
+
 
     public Worker retrieve(Long id) throws SQLException {
         return retrieve(id, "SELECT * FROM workers WHERE id = ?");
@@ -42,6 +51,7 @@ public class WorkerDao extends AbstractDao<Worker>{
     protected Worker mapRow(ResultSet rs) throws SQLException {
         Worker worker = new Worker();
         worker.setId(rs.getLong("id"));
+        worker.setProjectId(rs.getLong("project_id"));
         worker.setName(rs.getString("worker_name"));
         worker.setEmail(rs.getString("email"));
         return worker;

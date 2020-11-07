@@ -75,7 +75,7 @@ public class ProjectDaoTest {
 
         String body = "projectId=" + project.getId() + "&workerId=" + worker.getId();
         controller.handle(new HttpMessage(body), null);
-        assertThat(workerDao.retrieve(worker.getId()).getId())
+        assertThat(workerDao.retrieve(worker.getId()).getProjectId())
                 .isEqualTo(project.getId());
     }
 
