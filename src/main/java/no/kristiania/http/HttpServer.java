@@ -152,8 +152,9 @@ public class HttpServer{
             projectId = Integer.valueOf(new QueryString(requestTarget.substring(questionPos+1))
                     .getParameter("projectId"));
         }
+        List<Worker> list = projectId == null ? workerDao.list() : workerDao.listWorkersByProjectId(projectId);
         String body = "<ul>";
-        for (Worker worker : workerDao.list()) {
+        for (Worker worker : list) {
             if (projectId == null || projectId.equals(worker.getProjectId())) {
                 body += "<li>Name: " + worker.getName() + "<br> Email Address: " + worker.getEmail() + "</li>";
             }

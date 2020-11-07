@@ -63,6 +63,10 @@ public class WorkerDao extends AbstractDao<Worker>{
         }
     }
 
+    public List<Worker> listWorkersByProjectId(Integer projectId) {
+        return null;
+    }
+
     @Override
     protected Worker mapRow(ResultSet rs) throws SQLException {
         Worker worker = new Worker();
@@ -72,4 +76,6 @@ public class WorkerDao extends AbstractDao<Worker>{
         worker.setEmail(rs.getString("email"));
         return worker;
     }
+
+
 }
